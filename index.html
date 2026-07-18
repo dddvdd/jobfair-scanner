@@ -12,35 +12,102 @@
   .duplicate { background: #b8860b; }
   .invalid { background: #a71d2a; }
   .idle { background: #333; }
-  #startBtn {
-    font-size: 22px; padding: 16px 32px; margin: 20px auto; display: block;
-    background: #0b6efd; color: #fff; border: none; border-radius: 10px;
+  #counter {
+    margin: 12px auto 20px; font-size: 16px; font-weight: bold;
+    background: #222; border-radius: 10px; padding: 12px; max-width: 400px;
+    display: flex; justify-content: space-around;
+  }
+  #counter span.label { color: #aaa; font-weight: normal; font-size: 13px; display: block; }
+  .scanBtn {
+    font-size: 18px; padding: 16px 20px; margin: 8px auto; display: block;
+    width: 100%; max-width: 400px; color: #fff; border: none; border-radius: 10px;
+  }
+  #startBtn { background: #0b6efd; }
+  #hotsBtn { background: #d4820a; }
+  #backBtn {
+    font-size: 16px; padding: 10px 20px; margin: 16px auto; display: none;
+    background: #444; color: #fff; border: none; border-radius: 8px;
   }
   #errorMsg { color: #ff8080; margin-top: 12px; font-size: 14px; display: none; }
+  #modeLabel { font-size: 14px; color: #aaa; margin-top: 8px; display: none; }
 </style>
 </head>
 <body>
   <h2>Job Fair Check-In</h2>
-  <button id="startBtn" onclick="startScanner()">📷 Start Scanning</button>
+
+  <div id="counter">
+    <div><span id="checkedInCount">0</span><span class="label">Checked In</span></div>
+    <div><span id="hotsCount">0</span><span class="label">HOTS</span></div>
+  </div>
+
+  <button id="startBtn" class="scanBtn" onclick="startScanner('checkin')">📷 Scan Register Jobseeker</button>
+  <button id="hotsBtn" class="scanBtn" onclick="startScanner('hots')">⭐ Scan HOTS (Hired On The Spot)</button>
+
+  <div id="modeLabel"></div>
   <div id="reader"></div>
   <div id="result" class="idle">Point camera at QR code</div>
+  <button id="backBtn" onclick="stopScanner()">⬅ Back</button>
   <div id="errorMsg"></div>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
     // ====== EDIT THIS LINE with your Apps Script Web App URL ======
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
+    const APPS_SCRIPT_URL = 'Phttps://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
 
     let isProcessing = false;
     let html5QrCode;
+    let currentMode = null;
     let jsonpCounter = 0;
+
     const resultDiv = document.getElementById('result');
     const errorDiv = document.getElementById('errorMsg');
     const startBtn = document.getElementById('startBtn');
+    const hotsBtn = document.getElementById('hotsBtn');
+    const backBtn = document.getElementById('backBtn');
+    const modeLabel = document.getElementById('modeLabel');
 
-    function startScanner() {
+    // ---- Generic JSONP request (bypasses CORS entirely via <script> tag) ----
+    function jsonpGet(params, onDone) {
+      const callbackName = 'jsonpCallback_' + (jsonpCounter++);
+      const script = document.createElement('script');
+
+      window[callbackName] = function(data) {
+        onDone(data);
+        delete window[callbackName];
+        script.remove();
+      };
+      script.onerror = function() {
+        onDone({ status: 'error', message: 'Network error' });
+        delete window[callbackName];
+        script.remove();
+      };
+
+      const query = Object.keys(params).map(k => k + '=' + encodeURIComponent(params[k])).join('&');
+      script.src = APPS_SCRIPT_URL + '?' + query + '&callback=' + callbackName;
+      document.body.appendChild(script);
+    }
+
+    // ---- Live counter ----
+    function refreshStats() {
+      jsonpGet({ action: 'stats' }, (data) => {
+        if (data.status === 'success') {
+          document.getElementById('checkedInCount').textContent = data.checkedIn;
+          document.getElementById('hotsCount').textContent = data.hots;
+        }
+      });
+    }
+    refreshStats(); // load counts on page open
+
+    // ---- Starting a scan session (either mode) ----
+    function startScanner(mode) {
+      currentMode = mode;
       errorDiv.style.display = 'none';
-      startBtn.textContent = 'Starting camera...';
+      startBtn.style.display = 'none';
+      hotsBtn.style.display = 'none';
+
+      modeLabel.style.display = 'block';
+      modeLabel.textContent = mode === 'hots' ? 'Mode: HOTS Registration' : 'Mode: Check-In';
+
       html5QrCode = new Html5Qrcode("reader");
 
       html5QrCode.start(
@@ -48,14 +115,14 @@
         { fps: 10, qrbox: 250 },
         onScanSuccess
       ).then(() => {
-        startBtn.style.display = 'none';
         resultDiv.style.display = 'block';
+        backBtn.style.display = 'inline-block';
       }).catch(() => {
         Html5Qrcode.getCameras().then(devices => {
           if (devices && devices.length) {
             const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
             html5QrCode.start(backCam.id, { fps: 10, qrbox: 250 }, onScanSuccess)
-              .then(() => { startBtn.style.display = 'none'; resultDiv.style.display = 'block'; })
+              .then(() => { resultDiv.style.display = 'block'; backBtn.style.display = 'inline-block'; })
               .catch(err2 => showError(err2));
           } else {
             showError('No camera found on this device.');
@@ -64,54 +131,62 @@
       });
     }
 
-    function showError(err) {
-      startBtn.textContent = '📷 Start Scanning';
-      errorDiv.style.display = 'block';
-      errorDiv.textContent = 'Camera error: ' + (err.message || err) +
-        '. Make sure you tapped "Allow" on the camera prompt, and that camera access is enabled for this site in your phone browser settings.';
+    // ---- Back button: cleanly release the camera and return to the menu ----
+    function stopScanner() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          html5QrCode.clear();
+          resetToMenu();
+        }).catch(() => {
+          resetToMenu(); // even if stop() errors, still return the UI to the menu
+        });
+      } else {
+        resetToMenu();
+      }
     }
 
+    function resetToMenu() {
+      startBtn.style.display = 'block';
+      hotsBtn.style.display = 'block';
+      backBtn.style.display = 'none';
+      resultDiv.style.display = 'none';
+      modeLabel.style.display = 'none';
+      currentMode = null;
+    }
+
+    function showError(err) {
+      errorDiv.style.display = 'block';
+      errorDiv.textContent = 'Camera error: ' + (err.message || err) +
+        '. Make sure you tapped "Allow" on the camera prompt.';
+      resetToMenu();
+    }
+
+    // ---- Handling a successful QR read ----
     function onScanSuccess(decodedText) {
       if (isProcessing) return;
       isProcessing = true;
       resultDiv.className = 'idle';
       resultDiv.textContent = 'Checking...';
-      jsonpRequest(decodedText);
+
+      const action = currentMode === 'hots' ? 'hots' : 'checkin';
+      jsonpGet({ action: action, id: decodedText }, (res) => {
+        handleResult(res);
+        refreshStats();
+      });
     }
 
-    function jsonpRequest(scannedId) {
-      const callbackName = 'jsonpCallback_' + (jsonpCounter++);
-      const script = document.createElement('script');
-
-      window[callbackName] = function(data) {
-        handleResult(data);
-        delete window[callbackName];
-        script.remove();
-      };
-
-      script.onerror = function() {
-        resultDiv.className = 'invalid';
-        resultDiv.textContent = 'Network error - check internet connection';
-        setTimeout(() => { isProcessing = false; }, 2000);
-        delete window[callbackName];
-        script.remove();
-      };
-
-      script.src = APPS_SCRIPT_URL + '?action=checkin&id=' + encodeURIComponent(scannedId) + '&callback=' + callbackName;
-      document.body.appendChild(script);
-    }
-
-function handleResult(res) {
+    function handleResult(res) {
       if (res.status === 'success') {
-        if (navigator.vibrate) navigator.vibrate(200); // single buzz = success
+        if (navigator.vibrate) navigator.vibrate(200);
         resultDiv.className = 'success';
-        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:16px">Checked In — ' + res.time + '</span>';
+        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:16px">' +
+          (currentMode === 'hots' ? 'Registered HOTS' : 'Checked In') + ' — ' + res.time + '</span>';
       } else if (res.status === 'duplicate') {
-        if (navigator.vibrate) navigator.vibrate([100, 100, 100]); // triple buzz = warning
+        if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
         resultDiv.className = 'duplicate';
-        resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already checked in at ' + res.time + '</span>';
+        resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already recorded — ' + res.time + '</span>';
       } else {
-        if (navigator.vibrate) navigator.vibrate(500); // long buzz = error
+        if (navigator.vibrate) navigator.vibrate(500);
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '❌<br>Invalid Ticket';
       }
