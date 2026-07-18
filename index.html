@@ -5,31 +5,150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Job Fair Check-In</title>
 <style>
-  body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 16px; background: #111; color: #fff; }
-  #reader { width: 100%; max-width: 400px; margin: 0 auto; }
-  #result { margin-top: 20px; padding: 20px; border-radius: 12px; font-size: 20px; font-weight: bold; min-height: 60px; display: none; }
-  .success { background: #1e7e34; }
-  .duplicate { background: #b8860b; }
-  .invalid { background: #a71d2a; }
-  .idle { background: #333; }
-  #counter {
-    margin: 12px auto 20px; font-size: 16px; font-weight: bold;
-    background: #222; border-radius: 10px; padding: 12px; max-width: 400px;
-    display: flex; justify-content: space-around;
-  }
-  #counter span.label { color: #aaa; font-weight: normal; font-size: 13px; display: block; }
-  .scanBtn {
-    font-size: 18px; padding: 16px 20px; margin: 8px auto; display: block;
-    width: 100%; max-width: 400px; color: #fff; border: none; border-radius: 10px;
-  }
-  #startBtn { background: #0b6efd; }
-  #hotsBtn { background: #d4820a; }
-  #backBtn {
-    font-size: 16px; padding: 10px 20px; margin: 16px auto; display: none;
-    background: #444; color: #fff; border: none; border-radius: 8px;
-  }
-  #errorMsg { color: #ff8080; margin-top: 12px; font-size: 14px; display: none; }
-  #modeLabel { font-size: 14px; color: #aaa; margin-top: 8px; display: none; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding: 16px;
+  background: #111111;
+  color: #f0f0f0;
+}
+
+#reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+#result {
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  min-height: 60px;
+  display: none;
+  border: 1px solid transparent;
+  transition: background 0.25s ease, border-color 0.25s ease;
+  letter-spacing: -0.01em;
+}
+
+.success {
+  background: #1e7e34;
+  border-color: #2ea44f;
+}
+
+.duplicate {
+  background: #7a5000;
+  border-color: #b8860b;
+}
+
+.invalid {
+  background: #7a1020;
+  border-color: #c0392b;
+}
+
+.idle {
+  background: #1c1c1c;
+  border-color: #333333;
+  color: #aaaaaa;
+}
+
+#counter {
+  margin: 12px auto 20px;
+  font-size: 16px;
+  font-weight: 700;
+  background: #1a1a1a;
+  border: 1px solid #252525;
+  border-radius: 14px;
+  padding: 14px 12px;
+  max-width: 400px;
+  display: flex;
+  justify-content: space-around;
+}
+
+#counter span.label {
+  color: #666666;
+  font-weight: 400;
+  font-size: 11px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.scanBtn {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 20px;
+  margin: 8px auto;
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+  letter-spacing: -0.01em;
+}
+
+.scanBtn:hover {
+  filter: brightness(1.12);
+}
+
+.scanBtn:active {
+  transform: scale(0.98);
+}
+
+#startBtn {
+  background: #0b6efd;
+  box-shadow: 0 4px 24px rgba(11, 110, 253, 0.25);
+}
+
+#hotsBtn {
+  background: #d4820a;
+  box-shadow: 0 4px 24px rgba(212, 130, 10, 0.22);
+}
+
+#backBtn {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 20px;
+  margin: 16px auto;
+  display: none;
+  background: #222222;
+  color: #aaaaaa;
+  border: 1px solid #333333;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+#backBtn:hover {
+  background: #2a2a2a;
+  color: #f0f0f0;
+}
+
+#errorMsg {
+  color: #ff8080;
+  margin-top: 12px;
+  font-size: 14px;
+  display: none;
+}
+
+#modeLabel {
+  font-size: 12px;
+  color: #555555;
+  margin-top: 8px;
+  display: none;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
 </style>
 </head>
 <body>
