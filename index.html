@@ -86,16 +86,19 @@
         });
     }
 
-    function handleResult(res) {
+function handleResult(res) {
       if (res.status === 'success') {
+        if (navigator.vibrate) navigator.vibrate(200); // single buzz = success
         resultDiv.className = 'success';
-        resultDiv.textContent = '✅ ' + res.name + ' — Checked In (' + res.time + ')';
+        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:16px">Checked In — ' + res.time + '</span>';
       } else if (res.status === 'duplicate') {
+        if (navigator.vibrate) navigator.vibrate([100, 100, 100]); // triple buzz = warning
         resultDiv.className = 'duplicate';
-        resultDiv.textContent = '⚠ Already checked in: ' + res.name + ' (' + res.time + ')';
+        resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already checked in at ' + res.time + '</span>';
       } else {
+        if (navigator.vibrate) navigator.vibrate(500); // long buzz = error
         resultDiv.className = 'invalid';
-        resultDiv.textContent = '❌ Invalid ticket';
+        resultDiv.innerHTML = '❌<br>Invalid Ticket';
       }
       setTimeout(() => {
         isProcessing = false;
