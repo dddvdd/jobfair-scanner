@@ -185,6 +185,10 @@ function handleResult(res) {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
         resultDiv.className = 'duplicate';
         resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already recorded — ' + res.time + '</span>';
+      } else if (res.status === 'not_checked_in') {
+        if (navigator.vibrate) navigator.vibrate([150, 100, 150, 100, 150]); // distinct pattern
+        resultDiv.className = 'invalid';
+        resultDiv.innerHTML = '🚫<br>' + res.name + '<br><span style="font-size:16px">Not checked in yet — send to Check-In first</span>';
       } else if (res.status === 'error') {
         if (navigator.vibrate) navigator.vibrate(500);
         resultDiv.className = 'invalid';
