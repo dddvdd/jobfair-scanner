@@ -52,7 +52,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
     // ====== EDIT THIS LINE with your Apps Script Web App URL ======
-    const APPS_SCRIPT_URL = 'Phttps://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
 
     let isProcessing = false;
     let html5QrCode;
@@ -175,7 +175,7 @@
       });
     }
 
-    function handleResult(res) {
+function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
         resultDiv.className = 'success';
@@ -185,6 +185,10 @@
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
         resultDiv.className = 'duplicate';
         resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already recorded — ' + res.time + '</span>';
+      } else if (res.status === 'error') {
+        if (navigator.vibrate) navigator.vibrate(500);
+        resultDiv.className = 'invalid';
+        resultDiv.innerHTML = '⚠️ System Error<br><span style="font-size:14px">' + res.message + '</span>';
       } else {
         if (navigator.vibrate) navigator.vibrate(500);
         resultDiv.className = 'invalid';
