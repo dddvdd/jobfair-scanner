@@ -194,6 +194,81 @@ body {
   display: none;
   max-width: 400px;
 }
+
+/* ── Search + Registrant List ── */
+#listSection {
+  max-width: 400px;
+  margin: 24px auto 0;
+  text-align: left;
+}
+
+#listHeading {
+  font-size: 12px;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  margin: 0 0 8px 2px;
+}
+
+#searchInput {
+  width: 100%;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 15px;
+  padding: 12px 14px;
+  background: #1a1a1a;
+  border: 1px solid #252525;
+  border-radius: 12px;
+  color: #f0f0f0;
+  outline: none;
+  margin-bottom: 10px;
+  transition: border-color 0.15s ease;
+}
+
+#searchInput::placeholder { color: #555555; }
+#searchInput:focus { border-color: #0b6efd; }
+
+#registrantList {
+  background: #1a1a1a;
+  border: 1px solid #252525;
+  border-radius: 14px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.registrantRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 1px solid #232323;
+  gap: 10px;
+}
+
+.registrantRow:last-child { border-bottom: none; }
+
+.registrantName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f0f0f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.registrantTime {
+  font-size: 12px;
+  color: #2ea44f;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.listEmpty {
+  padding: 20px 14px;
+  text-align: center;
+  color: #555555;
+  font-size: 13px;
+}
 </style>
 </head>
 <body>
@@ -219,6 +294,15 @@ body {
   <div id="result" class="idle">Point camera at QR code</div>
   <div id="errorMsg"></div>
 
+  <!-- Search + registrant list (menu view only) -->
+  <div id="listSection">
+    <div id="listHeading">Checked-In Registrants</div>
+    <input id="searchInput" type="search" placeholder="Search by name..." autocomplete="off" oninput="filterList()">
+    <div id="registrantList">
+      <div class="listEmpty">Loading...</div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
@@ -227,16 +311,20 @@ body {
     let html5QrCode;
     let currentMode = null;
     let jsonpCounter = 0;
+    let allCheckedIn = []; // cached list, filtered client-side as the person types
 
     const resultDiv      = document.getElementById('result');
-    const errorDiv       = document.getElementById('errorMsg');
-    const startBtn       = document.getElementById('startBtn');
-    const hotsBtn        = document.getElementById('hotsBtn');
-    const backBtn        = document.getElementById('backBtn');
-    const modeLabel      = document.getElementById('modeLabel');
-    const pageTitle      = document.getElementById('pageTitle');
-    const pageIndicator  = document.getElementById('pageIndicator');
-    const counterDivider = document.getElementById('counterDivider');
+    const errorDiv        = document.getElementById('errorMsg');
+    const startBtn        = document.getElementById('startBtn');
+    const hotsBtn          = document.getElementById('hotsBtn');
+    const backBtn          = document.getElementById('backBtn');
+    const modeLabel        = document.getElementById('modeLabel');
+    const pageTitle        = document.getElementById('pageTitle');
+    const pageIndicator    = document.getElementById('pageIndicator');
+    const counterDivider   = document.getElementById('counterDivider');
+    const listSection      = document.getElementById('listSection');
+    const registrantList   = document.getElementById('registrantList');
+    const searchInput      = document.getElementById('searchInput');
 
     function jsonpGet(params, onDone) {
       const callbackName = 'jsonpCallback_' + (jsonpCounter++);
@@ -256,13 +344,52 @@ body {
         }
       });
     }
+
+    // ---- Registrant list + live search ----
+    function refreshList() {
+      jsonpGet({ action: 'list' }, (data) => {
+        if (data.status === 'success') {
+          allCheckedIn = data.list;
+          renderList(allCheckedIn);
+        }
+      });
+    }
+
+    function renderList(items) {
+      if (!items.length) {
+        registrantList.innerHTML = '<div class="listEmpty">No registrants found</div>';
+        return;
+      }
+      registrantList.innerHTML = items.map(item =>
+        '<div class="registrantRow">' +
+          '<span class="registrantName">' + escapeHtml(item.name) + '</span>' +
+          '<span class="registrantTime">' + escapeHtml(item.time) + '</span>' +
+        '</div>'
+      ).join('');
+    }
+
+    function filterList() {
+      const term = searchInput.value.trim().toLowerCase();
+      if (!term) { renderList(allCheckedIn); return; }
+      const filtered = allCheckedIn.filter(item => item.name.toLowerCase().includes(term));
+      renderList(filtered);
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
     refreshStats();
+    refreshList();
 
     function startScanner(mode) {
       currentMode = mode;
       errorDiv.style.display = 'none';
       startBtn.style.display = 'none';
       hotsBtn.style.display  = 'none';
+      listSection.style.display = 'none'; // hide search/list while actively scanning
 
       // Header
       pageTitle.style.display    = 'none';
@@ -314,6 +441,7 @@ body {
       backBtn.style.display   = 'none';
       resultDiv.style.display = 'none';
       modeLabel.style.display = 'none';
+      listSection.style.display = 'block';
       currentMode = null;
 
       // Restore header
@@ -324,6 +452,8 @@ body {
       document.getElementById('checkedInCount').closest('div').style.display = 'flex';
       document.getElementById('hotsCount').closest('div').style.display      = 'flex';
       counterDivider.style.display = 'block';
+
+      refreshList(); // pick up anything scanned while away from the menu
     }
 
     function showError(err) {
