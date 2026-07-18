@@ -7,6 +7,8 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+* { box-sizing: border-box; }
+
 body {
   font-family: 'Inter', Arial, sans-serif;
   text-align: center;
@@ -16,45 +18,35 @@ body {
   color: #f0f0f0;
 }
 
-h2 {
-  margin: 0 0 20px;
+/* ── Header Row ── */
+#headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 20px;
+}
+
+#pageTitle {
+  margin: 0;
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  text-align: left;
 }
 
-#reader {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+#pageIndicator {
+  font-size: 11px;
+  color: #555555;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: monospace;
 }
 
-#result {
-  margin-top: 0;
-  padding: 18px 24px;
-  border-radius: 14px;
-  font-size: 18px;
-  font-weight: 700;
-  min-height: 60px;
-  display: none;
-  border: 1px solid transparent;
-  transition: background 0.25s ease, border-color 0.25s ease;
-  letter-spacing: -0.01em;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-  box-sizing: border-box;
-}
-
-.success  { background: #1e7e34; border-color: #2ea44f; color: #ffffff; }
-.duplicate { background: #7a5000; border-color: #b8860b; color: #ffffff; }
-.invalid  { background: #7a1020; border-color: #c0392b; color: #ffffff; }
-.idle     { background: #1c1c1c; border-color: #333333; color: #aaaaaa; }
-
+/* ── Counter ── */
 #counter {
   margin: 0 auto 20px;
-  font-size: 16px;
-  font-weight: 700;
   background: #1a1a1a;
   border: 1px solid #252525;
   border-radius: 14px;
@@ -62,7 +54,14 @@ h2 {
   max-width: 400px;
   display: flex;
   justify-content: space-around;
-  box-sizing: border-box;
+  align-items: center;
+}
+
+#counter > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
 }
 
 #counter span.label {
@@ -72,12 +71,34 @@ h2 {
   display: block;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  margin-top: 2px;
 }
 
-#checkedInCount { font-size: 24px; font-weight: 700; color: #2ea44f; letter-spacing: -0.02em; }
-#hotsCount      { font-size: 24px; font-weight: 700; color: #e6a817; letter-spacing: -0.02em; }
+#checkedInCount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2ea44f;
+  letter-spacing: -0.02em;
+  display: block;
+  line-height: 1;
+}
 
+#hotsCount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #e6a817;
+  letter-spacing: -0.02em;
+  display: block;
+  line-height: 1;
+}
+
+#counterDivider {
+  width: 1px;
+  height: 36px;
+  background: #2a2a2a;
+  flex-shrink: 0;
+}
+
+/* ── Buttons ── */
 .scanBtn {
   font-family: 'Inter', Arial, sans-serif;
   font-size: 16px;
@@ -93,7 +114,6 @@ h2 {
   cursor: pointer;
   letter-spacing: -0.01em;
   transition: filter 0.15s ease, transform 0.1s ease;
-  box-sizing: border-box;
 }
 
 .scanBtn:hover  { filter: brightness(1.12); }
@@ -102,12 +122,12 @@ h2 {
 #startBtn { background: #0b6efd; box-shadow: 0 4px 24px rgba(11, 110, 253, 0.25); }
 #hotsBtn  { background: #d4820a; box-shadow: 0 4px 24px rgba(212, 130, 10, 0.22); }
 
+/* ── Back Button (lives in header row) ── */
 #backBtn {
   font-family: 'Inter', Arial, sans-serif;
   font-size: 14px;
   font-weight: 500;
   padding: 8px 16px;
-  margin: 0 auto 16px;
   display: none;
   background: #222222;
   color: #aaaaaa;
@@ -115,6 +135,7 @@ h2 {
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
+  margin: 0;
 }
 
 #backBtn:hover {
@@ -122,48 +143,84 @@ h2 {
   color: #f0f0f0;
 }
 
-#errorMsg {
-  color: #ff8080;
-  margin-top: 10px;
-  font-size: 13px;
-  display: none;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
+/* ── Mode Label ── */
 #modeLabel {
   font-size: 12px;
   color: #aaaaaa;
-  margin-top: 0;
-  margin-bottom: 12px;
+  margin: 0 auto 12px;
   display: none;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 500;
+  max-width: 400px;
+}
+
+/* ── Reader ── */
+#reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #252525;
+}
+
+/* ── Result Card ── */
+#result {
+  margin: 0 auto;
+  padding: 18px 24px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 700;
+  min-height: 60px;
+  display: none;
+  border: 1px solid transparent;
+  transition: background 0.25s ease, border-color 0.25s ease;
+  letter-spacing: -0.01em;
+  max-width: 400px;
+  width: 100%;
+}
+
+.success   { background: #1e7e34; border-color: #2ea44f; color: #ffffff; }
+.duplicate { background: #7a5000; border-color: #b8860b; color: #ffffff; }
+.invalid   { background: #7a1020; border-color: #c0392b; color: #ffffff; }
+.idle      { background: #1c1c1c; border-color: #333333; color: #aaaaaa; }
+
+/* ── Error ── */
+#errorMsg {
+  color: #ff8080;
+  margin: 10px auto 0;
+  font-size: 13px;
+  display: none;
+  max-width: 400px;
 }
 </style>
 </head>
 <body>
-  <h2>Job Fair Check-In</h2>
+
+  <!-- Header row: title/back on left, page indicator on right -->
+  <div id="headerRow">
+    <h2 id="pageTitle">Job Fair Check-In</h2>
+    <button id="backBtn" onclick="stopScanner()">⬅ Back</button>
+    <span id="pageIndicator">HOME</span>
+  </div>
 
   <div id="counter">
     <div><span id="checkedInCount">0</span><span class="label">Checked In</span></div>
+    <div id="counterDivider"></div>
     <div><span id="hotsCount">0</span><span class="label">HOTS</span></div>
   </div>
 
   <button id="startBtn" class="scanBtn" onclick="startScanner('checkin')">📷 Scan to Register Jobseeker</button>
-  <button id="hotsBtn" class="scanBtn" onclick="startScanner('hots')">⭐ Scan to Record HOTS</button>
+  <button id="hotsBtn"  class="scanBtn" onclick="startScanner('hots')">⭐ Scan to Record HOTS</button>
 
   <div id="modeLabel"></div>
   <div id="reader"></div>
   <div id="result" class="idle">Point camera at QR code</div>
-  <button id="backBtn" onclick="stopScanner()">⬅ Back</button>
   <div id="errorMsg"></div>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
   <script>
-    // ====== EDIT THIS LINE with your Apps Script Web App URL ======
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyG_HJ3UkhAShl67R5FrVFKhwB-2ShAjknjqDODiRQ9ET7olE-JmvAD7BkMTGh9syPX/exec';
 
     let isProcessing = false;
@@ -171,35 +228,26 @@ h2 {
     let currentMode = null;
     let jsonpCounter = 0;
 
-    const resultDiv = document.getElementById('result');
-    const errorDiv = document.getElementById('errorMsg');
-    const startBtn = document.getElementById('startBtn');
-    const hotsBtn = document.getElementById('hotsBtn');
-    const backBtn = document.getElementById('backBtn');
-    const modeLabel = document.getElementById('modeLabel');
+    const resultDiv      = document.getElementById('result');
+    const errorDiv       = document.getElementById('errorMsg');
+    const startBtn       = document.getElementById('startBtn');
+    const hotsBtn        = document.getElementById('hotsBtn');
+    const backBtn        = document.getElementById('backBtn');
+    const modeLabel      = document.getElementById('modeLabel');
+    const pageTitle      = document.getElementById('pageTitle');
+    const pageIndicator  = document.getElementById('pageIndicator');
+    const counterDivider = document.getElementById('counterDivider');
 
-    // ---- Generic JSONP request (bypasses CORS entirely via <script> tag) ----
     function jsonpGet(params, onDone) {
       const callbackName = 'jsonpCallback_' + (jsonpCounter++);
       const script = document.createElement('script');
-
-      window[callbackName] = function(data) {
-        onDone(data);
-        delete window[callbackName];
-        script.remove();
-      };
-      script.onerror = function() {
-        onDone({ status: 'error', message: 'Network error' });
-        delete window[callbackName];
-        script.remove();
-      };
-
+      window[callbackName] = function(data) { onDone(data); delete window[callbackName]; script.remove(); };
+      script.onerror = function() { onDone({ status: 'error', message: 'Network error' }); delete window[callbackName]; script.remove(); };
       const query = Object.keys(params).map(k => k + '=' + encodeURIComponent(params[k])).join('&');
       script.src = APPS_SCRIPT_URL + '?' + query + '&callback=' + callbackName;
       document.body.appendChild(script);
     }
 
-    // ---- Live counter ----
     function refreshStats() {
       jsonpGet({ action: 'stats' }, (data) => {
         if (data.status === 'success') {
@@ -208,36 +256,42 @@ h2 {
         }
       });
     }
-    refreshStats(); // load counts on page open
+    refreshStats();
 
-    // ---- Starting a scan session (either mode) ----
     function startScanner(mode) {
       currentMode = mode;
       errorDiv.style.display = 'none';
       startBtn.style.display = 'none';
-      hotsBtn.style.display = 'none';
+      hotsBtn.style.display  = 'none';
 
+      // Header
+      pageTitle.style.display    = 'none';
+      backBtn.style.display      = 'inline-block';
+      pageIndicator.textContent  = mode === 'hots' ? 'HOTS' : 'CHECK-IN';
+
+      // Counter — show only the relevant stat
       document.getElementById('checkedInCount').closest('div').style.display = mode === 'checkin' ? 'flex' : 'none';
-      document.getElementById('hotsCount').closest('div').style.display     = mode === 'hots'    ? 'flex' : 'none';
+      document.getElementById('hotsCount').closest('div').style.display      = mode === 'hots'    ? 'flex' : 'none';
+      counterDivider.style.display = 'none';
 
+      // Mode label with matching color
       modeLabel.style.display = 'block';
-      modeLabel.textContent = mode === 'hots' ? 'Mode: HOTS Registration' : 'Mode: Check-In';
+      modeLabel.textContent   = mode === 'hots' ? '⭐ Recording HOTS' : '📷 Registering Jobseeker';
+      modeLabel.style.color   = mode === 'hots' ? '#d4820a' : '#0b6efd';
 
       html5QrCode = new Html5Qrcode("reader");
-
       html5QrCode.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
         onScanSuccess
       ).then(() => {
         resultDiv.style.display = 'block';
-        backBtn.style.display = 'inline-block';
       }).catch(() => {
         Html5Qrcode.getCameras().then(devices => {
           if (devices && devices.length) {
             const backCam = devices.find(d => /back|rear|environment/i.test(d.label)) || devices[devices.length - 1];
             html5QrCode.start(backCam.id, { fps: 10, qrbox: 250 }, onScanSuccess)
-              .then(() => { resultDiv.style.display = 'block'; backBtn.style.display = 'inline-block'; })
+              .then(() => { resultDiv.style.display = 'block'; })
               .catch(err2 => showError(err2));
           } else {
             showError('No camera found on this device.');
@@ -246,68 +300,60 @@ h2 {
       });
     }
 
-    // ---- Back button: cleanly release the camera and return to the menu ----
     function stopScanner() {
       if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          html5QrCode.clear();
-          resetToMenu();
-        }).catch(() => {
-          resetToMenu(); // even if stop() errors, still return the UI to the menu
-        });
+        html5QrCode.stop().then(() => { html5QrCode.clear(); resetToMenu(); }).catch(() => resetToMenu());
       } else {
         resetToMenu();
       }
     }
 
     function resetToMenu() {
-      startBtn.style.display = 'block';
-      hotsBtn.style.display = 'block';
-      backBtn.style.display = 'none';
+      startBtn.style.display  = 'block';
+      hotsBtn.style.display   = 'block';
+      backBtn.style.display   = 'none';
       resultDiv.style.display = 'none';
       modeLabel.style.display = 'none';
-      
-      document.getElementById('checkedInCount').closest('div').style.display = 'flex';
-      document.getElementById('hotsCount').closest('div').style.display      = 'flex';      
-      
       currentMode = null;
+
+      // Restore header
+      pageTitle.style.display   = 'block';
+      pageIndicator.textContent = 'HOME';
+
+      // Restore both counter stats
+      document.getElementById('checkedInCount').closest('div').style.display = 'flex';
+      document.getElementById('hotsCount').closest('div').style.display      = 'flex';
+      counterDivider.style.display = 'block';
     }
 
     function showError(err) {
-      errorDiv.style.display = 'block';
-      errorDiv.textContent = 'Camera error: ' + (err.message || err) +
-        '. Make sure you tapped "Allow" on the camera prompt.';
+      errorDiv.style.display  = 'block';
+      errorDiv.textContent    = 'Camera error: ' + (err.message || err) + '. Make sure you tapped "Allow" on the camera prompt.';
       resetToMenu();
     }
 
-    // ---- Handling a successful QR read ----
     function onScanSuccess(decodedText) {
       if (isProcessing) return;
       isProcessing = true;
-      resultDiv.className = 'idle';
+      resultDiv.className  = 'idle';
       resultDiv.textContent = 'Checking...';
-
       const action = currentMode === 'hots' ? 'hots' : 'checkin';
-      jsonpGet({ action: action, id: decodedText }, (res) => {
-        handleResult(res);
-        refreshStats();
-      });
+      jsonpGet({ action: action, id: decodedText }, (res) => { handleResult(res); refreshStats(); });
     }
 
-function handleResult(res) {
+    function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
         resultDiv.className = 'success';
-        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:16px">' +
-          (currentMode === 'hots' ? 'Registered HOTS' : 'Checked In') + ' — ' + res.time + '</span>';
+        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">' + (currentMode === 'hots' ? 'Registered HOTS' : 'Checked In') + ' — ' + res.time + '</span>';
       } else if (res.status === 'duplicate') {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
         resultDiv.className = 'duplicate';
-        resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:16px">Already recorded — ' + res.time + '</span>';
+        resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:15px">Already recorded — ' + res.time + '</span>';
       } else if (res.status === 'not_checked_in') {
-        if (navigator.vibrate) navigator.vibrate([150, 100, 150, 100, 150]); // distinct pattern
+        if (navigator.vibrate) navigator.vibrate([150, 100, 150, 100, 150]);
         resultDiv.className = 'invalid';
-        resultDiv.innerHTML = '🚫<br>' + res.name + '<br><span style="font-size:16px">Not checked in yet — send to Check-In first</span>';
+        resultDiv.innerHTML = '🚫<br>' + res.name + '<br><span style="font-size:15px">Not checked in yet — send to Check-In first</span>';
       } else if (res.status === 'error') {
         if (navigator.vibrate) navigator.vibrate(500);
         resultDiv.className = 'invalid';
@@ -319,7 +365,7 @@ function handleResult(res) {
       }
       setTimeout(() => {
         isProcessing = false;
-        resultDiv.className = 'idle';
+        resultDiv.className  = 'idle';
         resultDiv.textContent = 'Point camera at QR code';
       }, 2500);
     }
