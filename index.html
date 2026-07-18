@@ -33,6 +33,7 @@
 
     let isProcessing = false;
     let html5QrCode;
+    let jsonpCounter = 0;
     const resultDiv = document.getElementById('result');
     const errorDiv = document.getElementById('errorMsg');
     const startBtn = document.getElementById('startBtn');
@@ -75,15 +76,29 @@
       isProcessing = true;
       resultDiv.className = 'idle';
       resultDiv.textContent = 'Checking...';
+      jsonpRequest(decodedText);
+    }
 
-      fetch(APPS_SCRIPT_URL + '?action=checkin&id=' + encodeURIComponent(decodedText))
-        .then(r => r.json())
-        .then(handleResult)
-        .catch(err => {
-          resultDiv.className = 'invalid';
-          resultDiv.textContent = 'Network error: ' + err.message;
-          setTimeout(() => { isProcessing = false; }, 2000);
-        });
+    function jsonpRequest(scannedId) {
+      const callbackName = 'jsonpCallback_' + (jsonpCounter++);
+      const script = document.createElement('script');
+
+      window[callbackName] = function(data) {
+        handleResult(data);
+        delete window[callbackName];
+        script.remove();
+      };
+
+      script.onerror = function() {
+        resultDiv.className = 'invalid';
+        resultDiv.textContent = 'Network error - check internet connection';
+        setTimeout(() => { isProcessing = false; }, 2000);
+        delete window[callbackName];
+        script.remove();
+      };
+
+      script.src = APPS_SCRIPT_URL + '?action=checkin&id=' + encodeURIComponent(scannedId) + '&callback=' + callbackName;
+      document.body.appendChild(script);
     }
 
 function handleResult(res) {
