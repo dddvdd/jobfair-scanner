@@ -71,6 +71,23 @@ body {
 
 #errorMsg { color: #ff8080; margin: 10px auto 0; font-size: 13px; display: none; max-width: 400px; }
 
+/* ── Screen Flash Overlay ── */
+#screenFlash {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 999;
+}
+#screenFlash.flash {
+  animation: screenPulse 0.7s ease-out forwards;
+}
+@keyframes screenPulse {
+  0%   { opacity: 0.6; }
+  25%  { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+
 /* ── HOTS Form ── */
 #hotsForm {
   display: none; max-width: 400px; margin: 0 auto; background: #1a1a1a;
@@ -116,6 +133,9 @@ body {
 </style>
 </head>
 <body>
+
+  <!-- Full-screen flash overlay -->
+  <div id="screenFlash"></div>
 
   <div id="headerRow">
     <h2 id="pageTitle">Job Fair Check-In</h2>
@@ -168,18 +188,27 @@ body {
     let pendingHotsId = null;
 
     const resultDiv      = document.getElementById('result');
-    const errorDiv        = document.getElementById('errorMsg');
-    const startBtn        = document.getElementById('startBtn');
-    const hotsBtn          = document.getElementById('hotsBtn');
-    const backBtn          = document.getElementById('backBtn');
-    const modeLabel        = document.getElementById('modeLabel');
-    const pageTitle        = document.getElementById('pageTitle');
-    const pageIndicator    = document.getElementById('pageIndicator');
-    const counterDivider   = document.getElementById('counterDivider');
-    const listSection      = document.getElementById('listSection');
-    const registrantList   = document.getElementById('registrantList');
-    const searchInput      = document.getElementById('searchInput');
-    const hotsForm          = document.getElementById('hotsForm');
+    const errorDiv       = document.getElementById('errorMsg');
+    const startBtn       = document.getElementById('startBtn');
+    const hotsBtn        = document.getElementById('hotsBtn');
+    const backBtn        = document.getElementById('backBtn');
+    const modeLabel      = document.getElementById('modeLabel');
+    const pageTitle      = document.getElementById('pageTitle');
+    const pageIndicator  = document.getElementById('pageIndicator');
+    const counterDivider = document.getElementById('counterDivider');
+    const listSection    = document.getElementById('listSection');
+    const registrantList = document.getElementById('registrantList');
+    const searchInput    = document.getElementById('searchInput');
+    const hotsForm       = document.getElementById('hotsForm');
+    const screenFlash    = document.getElementById('screenFlash');
+
+    // ── Screen pulse flash ──
+    function flashScreen(color) {
+      screenFlash.style.background = color;
+      screenFlash.classList.remove('flash');
+      void screenFlash.offsetWidth; // force reflow to restart animation
+      screenFlash.classList.add('flash');
+    }
 
     function jsonpGet(params, onDone) {
       const callbackName = 'jsonpCallback_' + (jsonpCounter++);
@@ -236,9 +265,9 @@ body {
       hotsBtn.style.display  = 'none';
       listSection.style.display = 'none';
 
-      pageTitle.style.display    = 'none';
-      backBtn.style.display      = 'inline-block';
-      pageIndicator.textContent  = mode === 'hots' ? 'HOTS' : 'CHECK-IN';
+      pageTitle.style.display   = 'none';
+      backBtn.style.display     = 'inline-block';
+      pageIndicator.textContent = mode === 'hots' ? 'HOTS' : 'CHECK-IN';
 
       document.getElementById('checkedInCount').closest('div').style.display = mode === 'checkin' ? 'flex' : 'none';
       document.getElementById('hotsCount').closest('div').style.display      = mode === 'hots'    ? 'flex' : 'none';
@@ -299,16 +328,15 @@ body {
     }
 
     function showError(err) {
-      errorDiv.style.display  = 'block';
-      errorDiv.textContent    = 'Camera error: ' + (err.message || err) + '. Make sure you tapped "Allow" on the camera prompt.';
+      errorDiv.style.display = 'block';
+      errorDiv.textContent   = 'Camera error: ' + (err.message || err) + '. Make sure you tapped "Allow" on the camera prompt.';
       resetToMenu();
     }
 
-    // ---- Scan routing: check-in goes straight through; HOTS pauses for a form first ----
     function onScanSuccess(decodedText) {
       if (isProcessing) return;
       isProcessing = true;
-      resultDiv.className  = 'idle';
+      resultDiv.className   = 'idle';
       resultDiv.textContent = 'Checking...';
 
       if (currentMode === 'hots') {
@@ -325,7 +353,7 @@ body {
     function resumeAfterDelay() {
       setTimeout(() => {
         isProcessing = false;
-        resultDiv.className  = 'idle';
+        resultDiv.className   = 'idle';
         resultDiv.textContent = 'Point camera at QR code';
       }, 2500);
     }
@@ -335,14 +363,14 @@ body {
         pendingHotsId = scannedId;
         resultDiv.style.display = 'none';
         openHotsForm(res.name, res.priorRecords);
-        return; // isProcessing stays true — camera keeps running but we ignore scans until the form resolves
+        return;
       }
       handleResult(res);
       resumeAfterDelay();
     }
 
     function openHotsForm(name, priorRecords) {
-      document.getElementById('companyInput').value = '';
+      document.getElementById('companyInput').value  = '';
       document.getElementById('positionInput').value = '';
       document.getElementById('hotsFormName').textContent = name;
 
@@ -360,23 +388,20 @@ body {
     }
 
     function cancelHotsForm() {
-      hotsForm.style.display = 'none';
+      hotsForm.style.display  = 'none';
       resultDiv.style.display = 'block';
       pendingHotsId = null;
-      isProcessing = false;
-      resultDiv.className  = 'idle';
+      isProcessing  = false;
+      resultDiv.className   = 'idle';
       resultDiv.textContent = 'Point camera at QR code';
     }
 
     function confirmHotsForm() {
-      const company = document.getElementById('companyInput').value.trim();
+      const company  = document.getElementById('companyInput').value.trim();
       const position = document.getElementById('positionInput').value.trim();
-      if (!company || !position) {
-        alert('Please fill in both Company/Agency and Position.');
-        return;
-      }
+      if (!company || !position) { alert('Please fill in both Company/Agency and Position.'); return; }
       jsonpGet({ action: 'hots', id: pendingHotsId, company: company, position: position }, (res) => {
-        hotsForm.style.display = 'none';
+        hotsForm.style.display  = 'none';
         resultDiv.style.display = 'block';
         handleResult(res);
         refreshStats();
@@ -388,6 +413,7 @@ body {
     function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
+        flashScreen('rgba(30, 126, 52, 0.5)');        // green pulse
         resultDiv.className = 'success';
         if (res.company) {
           resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">HOTS recorded — ' + res.company + ' (' + res.position + ')</span><br><span style="font-size:12px;color:#ccc">' + res.time + '</span>';
@@ -396,18 +422,22 @@ body {
         }
       } else if (res.status === 'duplicate') {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
+        flashScreen('rgba(184, 134, 11, 0.5)');       // amber pulse
         resultDiv.className = 'duplicate';
         resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:15px">Already recorded — ' + res.time + '</span>';
       } else if (res.status === 'not_checked_in') {
         if (navigator.vibrate) navigator.vibrate([150, 100, 150, 100, 150]);
+        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '🚫<br>' + res.name + '<br><span style="font-size:15px">Not checked in yet — send to Check-In first</span>';
       } else if (res.status === 'error') {
         if (navigator.vibrate) navigator.vibrate(500);
+        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '⚠️ System Error<br><span style="font-size:14px">' + res.message + '</span>';
       } else {
         if (navigator.vibrate) navigator.vibrate(500);
+        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '❌<br>Invalid Ticket';
       }
