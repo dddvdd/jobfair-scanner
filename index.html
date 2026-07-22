@@ -88,13 +88,20 @@ body {
   100% { opacity: 0; }
 }
 
-/* ── HOTS Form ── */
-#hotsForm {
-  display: none; max-width: 400px; margin: 0 auto; background: #1a1a1a;
-  border: 1px solid #d4820a; border-radius: 16px; padding: 18px; text-align: left;
+/* ── HOTS Form (popup) ── */
+.modalOverlay {
+  display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.65); z-index: 1000;
+  align-items: center; justify-content: center; padding: 16px;
 }
-#hotsFormHeading { font-size: 13px; color: #d4820a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
+.modalCard {
+  width: 100%; max-width: 400px; background: #1a1a1a;
+  border: 1px solid #d4820a; border-radius: 16px; padding: 20px; text-align: left;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+#hotsFormHeading, #dupConfirmHeading { font-size: 13px; color: #d4820a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
 #hotsFormName { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+#dupConfirmText { font-size: 15px; line-height: 1.6; margin: 10px 0 16px; color: #f0f0f0; }
 #priorHotsNotice {
   display: none; background: #2a1f00; border: 1px solid #b8860b; border-radius: 10px;
   padding: 10px 12px; font-size: 13px; color: #ffd485; margin-bottom: 12px; line-height: 1.5;
@@ -111,9 +118,10 @@ body {
   flex: 1; font-family: 'Inter', Arial, sans-serif; font-size: 15px; font-weight: 600;
   padding: 12px; border: none; border-radius: 10px; cursor: pointer;
 }
-#hotsCancelBtn { background: #2a2a2a; color: #aaaaaa; }
-#hotsConfirmBtn { background: #d4820a; color: #ffffff; }
-
+#hotsFormButtons button:disabled { opacity: 0.5; cursor: not-allowed; }
+#hotsCancelBtn, #dupCancelBtn { background: #2a2a2a; color: #aaaaaa; }
+#hotsConfirmBtn, #dupYesBtn { background: #d4820a; color: #ffffff; }
+  
 /* ── Search + Registrant List ── */
 #listSection { max-width: 400px; margin: 24px auto 0; text-align: left; }
 #listHeading { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin: 0 0 8px 2px; }
@@ -156,15 +164,28 @@ body {
   <div id="reader"></div>
   <div id="result" class="idle">Point camera at QR code</div>
 
-  <div id="hotsForm">
-    <div id="hotsFormHeading">Record HOTS For</div>
-    <div id="hotsFormName"></div>
-    <div id="priorHotsNotice"></div>
-    <input id="companyInput" class="hotsInput" type="text" placeholder="Company / Agency">
-    <input id="positionInput" class="hotsInput" type="text" placeholder="Position">
-    <div id="hotsFormButtons">
-      <button id="hotsCancelBtn" onclick="cancelHotsForm()">Cancel</button>
-      <button id="hotsConfirmBtn" onclick="confirmHotsForm()">Confirm HOTS</button>
+<div id="hotsFormOverlay" class="modalOverlay">
+    <div id="hotsForm" class="modalCard">
+      <div id="hotsFormHeading">Record HOTS For</div>
+      <div id="hotsFormName"></div>
+      <div id="priorHotsNotice"></div>
+      <input id="companyInput" class="hotsInput" type="text" placeholder="Company / Agency">
+      <input id="positionInput" class="hotsInput" type="text" placeholder="Position">
+      <div id="hotsFormButtons">
+        <button id="hotsCancelBtn" onclick="cancelHotsForm()">Cancel</button>
+        <button id="hotsConfirmBtn" onclick="confirmHotsForm()">Confirm HOTS</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dupConfirmOverlay" class="modalOverlay">
+    <div id="dupConfirmCard" class="modalCard">
+      <div id="dupConfirmHeading">⚠️ Confirm Additional HOTS</div>
+      <div id="dupConfirmText"></div>
+      <div id="hotsFormButtons">
+        <button id="dupCancelBtn" onclick="confirmDupNo()">Go Back</button>
+        <button id="dupYesBtn" onclick="confirmDupYes()">Yes, Record It</button>
+      </div>
     </div>
   </div>
 
@@ -199,7 +220,13 @@ body {
     const listSection    = document.getElementById('listSection');
     const registrantList = document.getElementById('registrantList');
     const searchInput    = document.getElementById('searchInput');
-    const hotsForm       = document.getElementById('hotsForm');
+    const hotsForm          = document.getElementById('hotsForm');
+    const hotsFormOverlay   = document.getElementById('hotsFormOverlay');
+    const dupConfirmOverlay = document.getElementById('dupConfirmOverlay');
+    let hotsSubmitting = false;
+    let pendingCompany = '';
+    let pendingPosition = '';
+    let pendingPriorCount = 0;
     const screenFlash    = document.getElementById('screenFlash');
 
     // ── Screen pulse flash ──
@@ -311,7 +338,8 @@ body {
       hotsBtn.style.display   = 'block';
       backBtn.style.display   = 'none';
       resultDiv.style.display = 'none';
-      hotsForm.style.display  = 'none';
+      hotsFormOverlay.style.display  = 'none';
+      dupConfirmOverlay.style.display = 'none';
       modeLabel.style.display = 'none';
       listSection.style.display = 'block';
       currentMode = null;
@@ -369,39 +397,78 @@ body {
       resumeAfterDelay();
     }
 
-    function openHotsForm(name, priorRecords) {
-      document.getElementById('companyInput').value  = '';
+function openHotsForm(name, priorRecords) {
+      document.getElementById('companyInput').value = '';
       document.getElementById('positionInput').value = '';
       document.getElementById('hotsFormName').textContent = name;
+      pendingPriorCount = priorRecords ? priorRecords.length : 0;
 
       const notice = document.getElementById('priorHotsNotice');
-      if (priorRecords && priorRecords.length) {
+      if (pendingPriorCount > 0) {
         notice.style.display = 'block';
-        notice.innerHTML = '⚠️ Already has ' + priorRecords.length + ' HOTS record(s):<br>' +
-          priorRecords.map(r => '• ' + escapeHtml(r.company) + ' — ' + escapeHtml(r.position)).join('<br>') +
-          '<br>Confirm below to add another.';
+        notice.innerHTML = '⚠️ Already has ' + pendingPriorCount + ' HOTS record(s):<br>' +
+          priorRecords.map(r => '• ' + escapeHtml(r.company) + ' — ' + escapeHtml(r.position)).join('<br>');
       } else {
         notice.style.display = 'none';
         notice.innerHTML = '';
       }
-      hotsForm.style.display = 'block';
+      hotsFormOverlay.style.display = 'flex';
     }
 
     function cancelHotsForm() {
-      hotsForm.style.display  = 'none';
+      hotsFormOverlay.style.display = 'none';
       resultDiv.style.display = 'block';
       pendingHotsId = null;
-      isProcessing  = false;
-      resultDiv.className   = 'idle';
+      isProcessing = false;
+      resultDiv.className  = 'idle';
       resultDiv.textContent = 'Point camera at QR code';
     }
 
+    // Step 1: validate the form. If this jobseeker already has prior HOTS records,
+    // route to a SEPARATE confirmation popup instead of submitting immediately.
     function confirmHotsForm() {
-      const company  = document.getElementById('companyInput').value.trim();
+      if (hotsSubmitting) return;
+      const company = document.getElementById('companyInput').value.trim();
       const position = document.getElementById('positionInput').value.trim();
-      if (!company || !position) { alert('Please fill in both Company/Agency and Position.'); return; }
+      if (!company || !position) {
+        alert('Please fill in both Company/Agency and Position.');
+        return;
+      }
+
+      if (pendingPriorCount > 0) {
+        pendingCompany = company;
+        pendingPosition = position;
+        hotsFormOverlay.style.display = 'none';
+        document.getElementById('dupConfirmText').innerHTML =
+          'This will be HOTS record <b>#' + (pendingPriorCount + 1) + '</b> for this jobseeker. Continue?';
+        dupConfirmOverlay.style.display = 'flex';
+        return;
+      }
+
+      submitHots(company, position);
+    }
+
+    // Step 2 (only for repeats): staff explicitly says yes/no before it's actually recorded
+    function confirmDupYes() {
+      dupConfirmOverlay.style.display = 'none';
+      submitHots(pendingCompany, pendingPosition);
+    }
+
+    function confirmDupNo() {
+      dupConfirmOverlay.style.display = 'none';
+      hotsFormOverlay.style.display = 'flex'; // back to the form so staff can re-check/edit
+    }
+
+    // Actual submission — guarded so a fast double-tap can never fire it twice
+    function submitHots(company, position) {
+      if (hotsSubmitting) return;
+      hotsSubmitting = true;
+      document.getElementById('hotsConfirmBtn').disabled = true;
+
       jsonpGet({ action: 'hots', id: pendingHotsId, company: company, position: position }, (res) => {
-        hotsForm.style.display  = 'none';
+        hotsSubmitting = false;
+        document.getElementById('hotsConfirmBtn').disabled = false;
+        hotsFormOverlay.style.display = 'none';
         resultDiv.style.display = 'block';
         handleResult(res);
         refreshStats();
@@ -409,7 +476,7 @@ body {
         resumeAfterDelay();
       });
     }
-
+    
     function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
