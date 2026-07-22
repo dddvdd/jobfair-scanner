@@ -18,262 +18,105 @@ body {
   color: #f0f0f0;
 }
 
-/* ── Header Row ── */
 #headerRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; max-width: 400px; margin: 0 auto 20px;
 }
+#pageTitle { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.02em; text-align: left; }
+#pageIndicator { font-size: 11px; color: #555555; text-transform: uppercase; letter-spacing: 0.1em; font-family: monospace; }
 
-#pageTitle {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  text-align: left;
-}
-
-#pageIndicator {
-  font-size: 11px;
-  color: #555555;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-family: monospace;
-}
-
-/* ── Counter ── */
 #counter {
-  margin: 0 auto 20px;
-  background: #1a1a1a;
-  border: 1px solid #252525;
-  border-radius: 14px;
-  padding: 14px 12px;
-  max-width: 400px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+  margin: 0 auto 20px; background: #1a1a1a; border: 1px solid #252525; border-radius: 14px;
+  padding: 14px 12px; max-width: 400px; display: flex; justify-content: space-around; align-items: center;
 }
+#counter > div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+#counter span.label { color: #666666; font-weight: 400; font-size: 11px; display: block; text-transform: uppercase; letter-spacing: 0.08em; }
+#checkedInCount { font-size: 28px; font-weight: 700; color: #2ea44f; letter-spacing: -0.02em; display: block; line-height: 1; }
+#hotsCount { font-size: 28px; font-weight: 700; color: #e6a817; letter-spacing: -0.02em; display: block; line-height: 1; }
+#counterDivider { width: 1px; height: 36px; background: #2a2a2a; flex-shrink: 0; }
 
-#counter > div {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-#counter span.label {
-  color: #666666;
-  font-weight: 400;
-  font-size: 11px;
-  display: block;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-#checkedInCount {
-  font-size: 28px;
-  font-weight: 700;
-  color: #2ea44f;
-  letter-spacing: -0.02em;
-  display: block;
-  line-height: 1;
-}
-
-#hotsCount {
-  font-size: 28px;
-  font-weight: 700;
-  color: #e6a817;
-  letter-spacing: -0.02em;
-  display: block;
-  line-height: 1;
-}
-
-#counterDivider {
-  width: 1px;
-  height: 36px;
-  background: #2a2a2a;
-  flex-shrink: 0;
-}
-
-/* ── Buttons ── */
 .scanBtn {
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 16px 20px;
-  margin: 6px auto;
-  display: block;
-  width: 100%;
-  max-width: 400px;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  letter-spacing: -0.01em;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  font-family: 'Inter', Arial, sans-serif; font-size: 16px; font-weight: 600; padding: 16px 20px;
+  margin: 6px auto; display: block; width: 100%; max-width: 400px; color: #ffffff; border: none;
+  border-radius: 12px; cursor: pointer; letter-spacing: -0.01em; transition: filter 0.15s ease, transform 0.1s ease;
 }
-
 .scanBtn:hover  { filter: brightness(1.12); }
 .scanBtn:active { transform: scale(0.98); }
-
 #startBtn { background: #0b6efd; box-shadow: 0 4px 24px rgba(11, 110, 253, 0.25); }
 #hotsBtn  { background: #d4820a; box-shadow: 0 4px 24px rgba(212, 130, 10, 0.22); }
 
-/* ── Back Button (lives in header row) ── */
 #backBtn {
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  display: none;
-  background: #222222;
-  color: #aaaaaa;
-  border: 1px solid #333333;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-  margin: 0;
+  font-family: 'Inter', Arial, sans-serif; font-size: 14px; font-weight: 500; padding: 8px 16px;
+  display: none; background: #222222; color: #aaaaaa; border: 1px solid #333333; border-radius: 10px;
+  cursor: pointer; transition: background 0.15s ease, color 0.15s ease; margin: 0;
 }
+#backBtn:hover { background: #2a2a2a; color: #f0f0f0; }
 
-#backBtn:hover {
-  background: #2a2a2a;
-  color: #f0f0f0;
-}
-
-/* ── Mode Label ── */
 #modeLabel {
-  font-size: 12px;
-  color: #aaaaaa;
-  margin: 0 auto 12px;
-  display: none;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 500;
-  max-width: 400px;
+  font-size: 12px; color: #aaaaaa; margin: 0 auto 12px; display: none;
+  text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; max-width: 400px;
 }
 
-/* ── Reader ── */
-#reader {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto 16px;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid #252525;
-}
+#reader { width: 100%; max-width: 400px; margin: 0 auto 16px; border-radius: 18px; overflow: hidden; border: 1px solid #252525; }
 
-/* ── Result Card ── */
 #result {
-  margin: 0 auto;
-  padding: 18px 24px;
-  border-radius: 14px;
-  font-size: 18px;
-  font-weight: 700;
-  min-height: 60px;
-  display: none;
-  border: 1px solid transparent;
-  transition: background 0.25s ease, border-color 0.25s ease;
-  letter-spacing: -0.01em;
-  max-width: 400px;
-  width: 100%;
+  margin: 0 auto; padding: 18px 24px; border-radius: 14px; font-size: 18px; font-weight: 700;
+  min-height: 60px; display: none; border: 1px solid transparent; transition: background 0.25s ease, border-color 0.25s ease;
+  letter-spacing: -0.01em; max-width: 400px; width: 100%;
 }
-
 .success   { background: #1e7e34; border-color: #2ea44f; color: #ffffff; }
 .duplicate { background: #7a5000; border-color: #b8860b; color: #ffffff; }
 .invalid   { background: #7a1020; border-color: #c0392b; color: #ffffff; }
 .idle      { background: #1c1c1c; border-color: #333333; color: #aaaaaa; }
 
-/* ── Error ── */
-#errorMsg {
-  color: #ff8080;
-  margin: 10px auto 0;
-  font-size: 13px;
-  display: none;
-  max-width: 400px;
+#errorMsg { color: #ff8080; margin: 10px auto 0; font-size: 13px; display: none; max-width: 400px; }
+
+/* ── HOTS Form ── */
+#hotsForm {
+  display: none; max-width: 400px; margin: 0 auto; background: #1a1a1a;
+  border: 1px solid #d4820a; border-radius: 16px; padding: 18px; text-align: left;
 }
+#hotsFormHeading { font-size: 13px; color: #d4820a; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 4px; }
+#hotsFormName { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+#priorHotsNotice {
+  display: none; background: #2a1f00; border: 1px solid #b8860b; border-radius: 10px;
+  padding: 10px 12px; font-size: 13px; color: #ffd485; margin-bottom: 12px; line-height: 1.5;
+}
+.hotsInput {
+  width: 100%; font-family: 'Inter', Arial, sans-serif; font-size: 15px; padding: 12px 14px;
+  background: #111111; border: 1px solid #333333; border-radius: 10px; color: #f0f0f0;
+  outline: none; margin-bottom: 10px; transition: border-color 0.15s ease;
+}
+.hotsInput::placeholder { color: #555555; }
+.hotsInput:focus { border-color: #d4820a; }
+#hotsFormButtons { display: flex; gap: 10px; margin-top: 4px; }
+#hotsFormButtons button {
+  flex: 1; font-family: 'Inter', Arial, sans-serif; font-size: 15px; font-weight: 600;
+  padding: 12px; border: none; border-radius: 10px; cursor: pointer;
+}
+#hotsCancelBtn { background: #2a2a2a; color: #aaaaaa; }
+#hotsConfirmBtn { background: #d4820a; color: #ffffff; }
 
 /* ── Search + Registrant List ── */
-#listSection {
-  max-width: 400px;
-  margin: 24px auto 0;
-  text-align: left;
-}
-
-#listHeading {
-  font-size: 12px;
-  color: #666666;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 500;
-  margin: 0 0 8px 2px;
-}
-
+#listSection { max-width: 400px; margin: 24px auto 0; text-align: left; }
+#listHeading { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin: 0 0 8px 2px; }
 #searchInput {
-  width: 100%;
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 15px;
-  padding: 12px 14px;
-  background: #1a1a1a;
-  border: 1px solid #252525;
-  border-radius: 12px;
-  color: #f0f0f0;
-  outline: none;
-  margin-bottom: 10px;
-  transition: border-color 0.15s ease;
+  width: 100%; font-family: 'Inter', Arial, sans-serif; font-size: 15px; padding: 12px 14px;
+  background: #1a1a1a; border: 1px solid #252525; border-radius: 12px; color: #f0f0f0;
+  outline: none; margin-bottom: 10px; transition: border-color 0.15s ease;
 }
-
 #searchInput::placeholder { color: #555555; }
 #searchInput:focus { border-color: #0b6efd; }
-
-#registrantList {
-  background: #1a1a1a;
-  border: 1px solid #252525;
-  border-radius: 14px;
-  max-height: 320px;
-  overflow-y: auto;
-}
-
-.registrantRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 14px;
-  border-bottom: 1px solid #232323;
-  gap: 10px;
-}
-
+#registrantList { background: #1a1a1a; border: 1px solid #252525; border-radius: 14px; max-height: 320px; overflow-y: auto; }
+.registrantRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #232323; gap: 10px; }
 .registrantRow:last-child { border-bottom: none; }
-
-.registrantName {
-  font-size: 14px;
-  font-weight: 600;
-  color: #f0f0f0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.registrantTime {
-  font-size: 12px;
-  color: #2ea44f;
-  font-weight: 500;
-  flex-shrink: 0;
-}
-
-.listEmpty {
-  padding: 20px 14px;
-  text-align: center;
-  color: #555555;
-  font-size: 13px;
-}
+.registrantName { font-size: 14px; font-weight: 600; color: #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.registrantTime { font-size: 12px; color: #2ea44f; font-weight: 500; flex-shrink: 0; }
+.listEmpty { padding: 20px 14px; text-align: center; color: #555555; font-size: 13px; }
 </style>
 </head>
 <body>
 
-  <!-- Header row: title/back on left, page indicator on right -->
   <div id="headerRow">
     <h2 id="pageTitle">Job Fair Check-In</h2>
     <button id="backBtn" onclick="stopScanner()">⬅ Back</button>
@@ -292,15 +135,25 @@ body {
   <div id="modeLabel"></div>
   <div id="reader"></div>
   <div id="result" class="idle">Point camera at QR code</div>
+
+  <div id="hotsForm">
+    <div id="hotsFormHeading">Record HOTS For</div>
+    <div id="hotsFormName"></div>
+    <div id="priorHotsNotice"></div>
+    <input id="companyInput" class="hotsInput" type="text" placeholder="Company / Agency">
+    <input id="positionInput" class="hotsInput" type="text" placeholder="Position">
+    <div id="hotsFormButtons">
+      <button id="hotsCancelBtn" onclick="cancelHotsForm()">Cancel</button>
+      <button id="hotsConfirmBtn" onclick="confirmHotsForm()">Confirm HOTS</button>
+    </div>
+  </div>
+
   <div id="errorMsg"></div>
 
-  <!-- Search + registrant list (menu view only) -->
   <div id="listSection">
     <div id="listHeading">Checked-In Registrants</div>
     <input id="searchInput" type="search" placeholder="Search by name..." autocomplete="off" oninput="filterList()">
-    <div id="registrantList">
-      <div class="listEmpty">Loading...</div>
-    </div>
+    <div id="registrantList"><div class="listEmpty">Loading...</div></div>
   </div>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -311,7 +164,8 @@ body {
     let html5QrCode;
     let currentMode = null;
     let jsonpCounter = 0;
-    let allCheckedIn = []; // cached list, filtered client-side as the person types
+    let allCheckedIn = [];
+    let pendingHotsId = null;
 
     const resultDiv      = document.getElementById('result');
     const errorDiv        = document.getElementById('errorMsg');
@@ -325,6 +179,7 @@ body {
     const listSection      = document.getElementById('listSection');
     const registrantList   = document.getElementById('registrantList');
     const searchInput      = document.getElementById('searchInput');
+    const hotsForm          = document.getElementById('hotsForm');
 
     function jsonpGet(params, onDone) {
       const callbackName = 'jsonpCallback_' + (jsonpCounter++);
@@ -345,34 +200,24 @@ body {
       });
     }
 
-    // ---- Registrant list + live search ----
     function refreshList() {
       jsonpGet({ action: 'list' }, (data) => {
-        if (data.status === 'success') {
-          allCheckedIn = data.list;
-          renderList(allCheckedIn);
-        }
+        if (data.status === 'success') { allCheckedIn = data.list; renderList(allCheckedIn); }
       });
     }
 
     function renderList(items) {
-      if (!items.length) {
-        registrantList.innerHTML = '<div class="listEmpty">No registrants found</div>';
-        return;
-      }
+      if (!items.length) { registrantList.innerHTML = '<div class="listEmpty">No registrants found</div>'; return; }
       registrantList.innerHTML = items.map(item =>
-        '<div class="registrantRow">' +
-          '<span class="registrantName">' + escapeHtml(item.name) + '</span>' +
-          '<span class="registrantTime">' + escapeHtml(item.time) + '</span>' +
-        '</div>'
+        '<div class="registrantRow"><span class="registrantName">' + escapeHtml(item.name) +
+        '</span><span class="registrantTime">' + escapeHtml(item.time) + '</span></div>'
       ).join('');
     }
 
     function filterList() {
       const term = searchInput.value.trim().toLowerCase();
       if (!term) { renderList(allCheckedIn); return; }
-      const filtered = allCheckedIn.filter(item => item.name.toLowerCase().includes(term));
-      renderList(filtered);
+      renderList(allCheckedIn.filter(item => item.name.toLowerCase().includes(term)));
     }
 
     function escapeHtml(str) {
@@ -389,19 +234,16 @@ body {
       errorDiv.style.display = 'none';
       startBtn.style.display = 'none';
       hotsBtn.style.display  = 'none';
-      listSection.style.display = 'none'; // hide search/list while actively scanning
+      listSection.style.display = 'none';
 
-      // Header
       pageTitle.style.display    = 'none';
       backBtn.style.display      = 'inline-block';
       pageIndicator.textContent  = mode === 'hots' ? 'HOTS' : 'CHECK-IN';
 
-      // Counter — show only the relevant stat
       document.getElementById('checkedInCount').closest('div').style.display = mode === 'checkin' ? 'flex' : 'none';
       document.getElementById('hotsCount').closest('div').style.display      = mode === 'hots'    ? 'flex' : 'none';
       counterDivider.style.display = 'none';
 
-      // Mode label with matching color
       modeLabel.style.display = 'block';
       modeLabel.textContent   = mode === 'hots' ? '⭐ Recording HOTS' : '📷 Registering Jobseeker';
       modeLabel.style.color   = mode === 'hots' ? '#d4820a' : '#0b6efd';
@@ -440,20 +282,20 @@ body {
       hotsBtn.style.display   = 'block';
       backBtn.style.display   = 'none';
       resultDiv.style.display = 'none';
+      hotsForm.style.display  = 'none';
       modeLabel.style.display = 'none';
       listSection.style.display = 'block';
       currentMode = null;
+      isProcessing = false;
+      pendingHotsId = null;
 
-      // Restore header
       pageTitle.style.display   = 'block';
       pageIndicator.textContent = 'HOME';
-
-      // Restore both counter stats
       document.getElementById('checkedInCount').closest('div').style.display = 'flex';
       document.getElementById('hotsCount').closest('div').style.display      = 'flex';
       counterDivider.style.display = 'block';
 
-      refreshList(); // pick up anything scanned while away from the menu
+      refreshList();
     }
 
     function showError(err) {
@@ -462,20 +304,96 @@ body {
       resetToMenu();
     }
 
+    // ---- Scan routing: check-in goes straight through; HOTS pauses for a form first ----
     function onScanSuccess(decodedText) {
       if (isProcessing) return;
       isProcessing = true;
       resultDiv.className  = 'idle';
       resultDiv.textContent = 'Checking...';
-      const action = currentMode === 'hots' ? 'hots' : 'checkin';
-      jsonpGet({ action: action, id: decodedText }, (res) => { handleResult(res); refreshStats(); });
+
+      if (currentMode === 'hots') {
+        jsonpGet({ action: 'hots_info', id: decodedText }, (res) => handleHotsInfo(decodedText, res));
+      } else {
+        jsonpGet({ action: 'checkin', id: decodedText }, (res) => {
+          handleResult(res);
+          refreshStats();
+          resumeAfterDelay();
+        });
+      }
+    }
+
+    function resumeAfterDelay() {
+      setTimeout(() => {
+        isProcessing = false;
+        resultDiv.className  = 'idle';
+        resultDiv.textContent = 'Point camera at QR code';
+      }, 2500);
+    }
+
+    function handleHotsInfo(scannedId, res) {
+      if (res.status === 'ok') {
+        pendingHotsId = scannedId;
+        resultDiv.style.display = 'none';
+        openHotsForm(res.name, res.priorRecords);
+        return; // isProcessing stays true — camera keeps running but we ignore scans until the form resolves
+      }
+      handleResult(res);
+      resumeAfterDelay();
+    }
+
+    function openHotsForm(name, priorRecords) {
+      document.getElementById('companyInput').value = '';
+      document.getElementById('positionInput').value = '';
+      document.getElementById('hotsFormName').textContent = name;
+
+      const notice = document.getElementById('priorHotsNotice');
+      if (priorRecords && priorRecords.length) {
+        notice.style.display = 'block';
+        notice.innerHTML = '⚠️ Already has ' + priorRecords.length + ' HOTS record(s):<br>' +
+          priorRecords.map(r => '• ' + escapeHtml(r.company) + ' — ' + escapeHtml(r.position)).join('<br>') +
+          '<br>Confirm below to add another.';
+      } else {
+        notice.style.display = 'none';
+        notice.innerHTML = '';
+      }
+      hotsForm.style.display = 'block';
+    }
+
+    function cancelHotsForm() {
+      hotsForm.style.display = 'none';
+      resultDiv.style.display = 'block';
+      pendingHotsId = null;
+      isProcessing = false;
+      resultDiv.className  = 'idle';
+      resultDiv.textContent = 'Point camera at QR code';
+    }
+
+    function confirmHotsForm() {
+      const company = document.getElementById('companyInput').value.trim();
+      const position = document.getElementById('positionInput').value.trim();
+      if (!company || !position) {
+        alert('Please fill in both Company/Agency and Position.');
+        return;
+      }
+      jsonpGet({ action: 'hots', id: pendingHotsId, company: company, position: position }, (res) => {
+        hotsForm.style.display = 'none';
+        resultDiv.style.display = 'block';
+        handleResult(res);
+        refreshStats();
+        pendingHotsId = null;
+        resumeAfterDelay();
+      });
     }
 
     function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
         resultDiv.className = 'success';
-        resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">' + (currentMode === 'hots' ? 'Registered HOTS' : 'Checked In') + ' — ' + res.time + '</span>';
+        if (res.company) {
+          resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">HOTS recorded — ' + res.company + ' (' + res.position + ')</span><br><span style="font-size:12px;color:#ccc">' + res.time + '</span>';
+        } else {
+          resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">Checked In — ' + res.time + '</span>';
+        }
       } else if (res.status === 'duplicate') {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
         resultDiv.className = 'duplicate';
@@ -493,11 +411,6 @@ body {
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '❌<br>Invalid Ticket';
       }
-      setTimeout(() => {
-        isProcessing = false;
-        resultDiv.className  = 'idle';
-        resultDiv.textContent = 'Point camera at QR code';
-      }, 2500);
     }
   </script>
 </body>
