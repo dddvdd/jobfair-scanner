@@ -60,7 +60,7 @@ body {
 #reader { width: 100%; max-width: 400px; margin: 0 auto 16px; border-radius: 18px; overflow: hidden; border: 1px solid #252525; }
 
 #result {
-  margin: 0 auto; padding: 18px 24px; border-radius: 14px; font-size: 18px; font-weight: 700;
+  margin: 0 auto 16px; padding: 18px 24px; border-radius: 14px; font-size: 18px; font-weight: 700;
   min-height: 60px; display: none; border: 1px solid transparent; transition: background 0.25s ease, border-color 0.25s ease;
   letter-spacing: -0.01em; max-width: 400px; width: 100%;
 }
@@ -72,23 +72,11 @@ body {
 #errorMsg { color: #ff8080; margin: 10px auto 0; font-size: 13px; display: none; max-width: 400px; }
 
 /* ── Screen Flash Overlay ── */
-#screenFlash {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0;
-  z-index: 999;
-}
-#screenFlash.flash {
-  animation: screenPulse 1s ease-out forwards;
-}
-@keyframes screenPulse {
-  0%   { opacity: 0.6; }
-  25%  { opacity: 0.5; }
-  100% { opacity: 0; }
-}
+#screenFlash { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 999; }
+#screenFlash.flash { animation: screenPulse 1s ease-out forwards; }
+@keyframes screenPulse { 0% { opacity: 0.6; } 25% { opacity: 0.5; } 100% { opacity: 0; } }
 
-/* ── HOTS Form (popup) ── */
+/* ── Modals (HOTS form + duplicate confirm) ── */
 .modalOverlay {
   display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.65); z-index: 1000;
@@ -113,31 +101,14 @@ body {
 }
 .hotsInput::placeholder { color: #555555; }
 .hotsInput:focus { border-color: #d4820a; }
-#hotsFormButtons { display: flex; gap: 10px; margin-top: 4px; }
-#hotsFormButtons button {
+.modalButtons { display: flex; gap: 10px; margin-top: 4px; }
+.modalButtons button {
   flex: 1; font-family: 'Inter', Arial, sans-serif; font-size: 15px; font-weight: 600;
   padding: 12px; border: none; border-radius: 10px; cursor: pointer;
 }
-#hotsFormButtons button:disabled { opacity: 0.5; cursor: not-allowed; }
+.modalButtons button:disabled { opacity: 0.5; cursor: not-allowed; }
 #hotsCancelBtn, #dupCancelBtn { background: #2a2a2a; color: #aaaaaa; }
 #hotsConfirmBtn, #dupYesBtn { background: #d4820a; color: #ffffff; }
-  
-/* ── Search + Registrant List ── */
-#listSection { max-width: 400px; margin: 24px auto 0; text-align: left; }
-#listHeading { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin: 0 0 8px 2px; }
-#searchInput {
-  width: 100%; font-family: 'Inter', Arial, sans-serif; font-size: 15px; padding: 12px 14px;
-  background: #1a1a1a; border: 1px solid #252525; border-radius: 12px; color: #f0f0f0;
-  outline: none; margin-bottom: 10px; transition: border-color 0.15s ease;
-}
-#searchInput::placeholder { color: #555555; }
-#searchInput:focus { border-color: #0b6efd; }
-#registrantList { background: #1a1a1a; border: 1px solid #252525; border-radius: 14px; max-height: 320px; overflow-y: auto; }
-.registrantRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #232323; gap: 10px; }
-.registrantRow:last-child { border-bottom: none; }
-.registrantName { font-size: 14px; font-weight: 600; color: #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.registrantTime { font-size: 12px; color: #2ea44f; font-weight: 500; flex-shrink: 0; }
-.listEmpty { padding: 20px 14px; text-align: center; color: #555555; font-size: 13px; }
 
 .autocompleteWrap { position: relative; }
 .suggestionBox {
@@ -149,11 +120,35 @@ body {
 .suggestionItem:last-child { border-bottom: none; }
 .suggestionItem:hover { background: #d4820a; color: #111111; }
 
+/* ── Search + Registrant List ── */
+#listSection { max-width: 400px; margin: 24px auto 0; text-align: left; }
+#listHeading { font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin: 0 0 8px 2px; }
+#searchInput {
+  width: 100%; font-family: 'Inter', Arial, sans-serif; font-size: 15px; padding: 12px 14px;
+  background: #1a1a1a; border: 1px solid #252525; border-radius: 12px; color: #f0f0f0;
+  outline: none; margin-bottom: 10px; transition: border-color 0.15s ease;
+}
+#searchInput::placeholder { color: #555555; }
+#searchInput:focus { border-color: #0b6efd; }
+#registrantList { background: #1a1a1a; border: 1px solid #252525; border-radius: 14px; max-height: 360px; overflow-y: auto; }
+.registrantRow { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid #232323; gap: 10px; }
+.registrantRow:last-child { border-bottom: none; }
+.registrantInfo { min-width: 0; }
+.registrantName { font-size: 14px; font-weight: 600; color: #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.registrantTime { font-size: 12px; color: #2ea44f; font-weight: 500; }
+.registrantStatusPending { font-size: 12px; color: #888888; font-weight: 500; }
+.rowActionBtn {
+  flex-shrink: 0; font-family: 'Inter', Arial, sans-serif; font-size: 12px; font-weight: 600;
+  padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; color: #ffffff;
+}
+.rowActionBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.checkInActionBtn { background: #0b6efd; }
+.hotsActionBtn { background: #d4820a; }
+.listEmpty { padding: 20px 14px; text-align: center; color: #555555; font-size: 13px; }
 </style>
 </head>
 <body>
 
-  <!-- Full-screen flash overlay -->
   <div id="screenFlash"></div>
 
   <div id="headerRow">
@@ -175,7 +170,7 @@ body {
   <div id="reader"></div>
   <div id="result" class="idle">Point camera at QR code</div>
 
-<div id="hotsFormOverlay" class="modalOverlay">
+  <div id="hotsFormOverlay" class="modalOverlay">
     <div id="hotsForm" class="modalCard">
       <div id="hotsFormHeading">Record HOTS For</div>
       <div id="hotsFormName"></div>
@@ -187,9 +182,8 @@ body {
       <div class="autocompleteWrap">
         <input id="positionInput" class="hotsInput" type="text" placeholder="Position" autocomplete="off" oninput="onPositionInput()">
         <div id="positionSuggestions" class="suggestionBox"></div>
-      </div> 
-      <input id="positionInput" class="hotsInput" type="text" placeholder="Position">
-      <div id="hotsFormButtons">
+      </div>
+      <div class="modalButtons">
         <button id="hotsCancelBtn" onclick="cancelHotsForm()">Cancel</button>
         <button id="hotsConfirmBtn" onclick="confirmHotsForm()">Confirm HOTS</button>
       </div>
@@ -200,7 +194,7 @@ body {
     <div id="dupConfirmCard" class="modalCard">
       <div id="dupConfirmHeading">⚠️ Confirm Additional HOTS</div>
       <div id="dupConfirmText"></div>
-      <div id="hotsFormButtons">
+      <div class="modalButtons">
         <button id="dupCancelBtn" onclick="confirmDupNo()">Go Back</button>
         <button id="dupYesBtn" onclick="confirmDupYes()">Yes, Record It</button>
       </div>
@@ -210,8 +204,8 @@ body {
   <div id="errorMsg"></div>
 
   <div id="listSection">
-    <div id="listHeading">Checked-In Registrants</div>
-    <input id="searchInput" type="search" placeholder="Search by name..." autocomplete="off" oninput="filterList()">
+    <div id="listHeading">Registrants</div>
+    <input id="searchInput" type="search" placeholder="Search all registrants by name..." autocomplete="off" oninput="filterList()">
     <div id="registrantList"><div class="listEmpty">Loading...</div></div>
   </div>
 
@@ -223,7 +217,7 @@ body {
     let html5QrCode;
     let currentMode = null;
     let jsonpCounter = 0;
-    let allCheckedIn = [];
+    let allRegistrants = [];
     let pendingHotsId = null;
     let hotsSubmitting = false;
     let pendingCompany = '';
@@ -231,42 +225,30 @@ body {
     let pendingPriorCount = 0;
     let vacancyData = [];
     let vacancyCompanies = [];
-    
-    const resultDiv      = document.getElementById('result');
-    const errorDiv       = document.getElementById('errorMsg');
-    const startBtn       = document.getElementById('startBtn');
-    const hotsBtn        = document.getElementById('hotsBtn');
-    const backBtn        = document.getElementById('backBtn');
-    const modeLabel      = document.getElementById('modeLabel');
-    const pageTitle      = document.getElementById('pageTitle');
-    const pageIndicator  = document.getElementById('pageIndicator');
-    const counterDivider = document.getElementById('counterDivider');
-    const listSection    = document.getElementById('listSection');
-    const registrantList = document.getElementById('registrantList');
-    const searchInput    = document.getElementById('searchInput');
-    const hotsForm          = document.getElementById('hotsForm');
-    const hotsFormOverlay   = document.getElementById('hotsFormOverlay');
-    const dupConfirmOverlay = document.getElementById('dupConfirmOverlay');
-    const screenFlash    = document.getElementById('screenFlash');
+
+    const resultDiv        = document.getElementById('result');
+    const errorDiv          = document.getElementById('errorMsg');
+    const startBtn          = document.getElementById('startBtn');
+    const hotsBtn            = document.getElementById('hotsBtn');
+    const backBtn            = document.getElementById('backBtn');
+    const modeLabel          = document.getElementById('modeLabel');
+    const pageTitle          = document.getElementById('pageTitle');
+    const pageIndicator      = document.getElementById('pageIndicator');
+    const counterDivider     = document.getElementById('counterDivider');
+    const listSection        = document.getElementById('listSection');
+    const registrantList     = document.getElementById('registrantList');
+    const searchInput        = document.getElementById('searchInput');
+    const hotsFormOverlay    = document.getElementById('hotsFormOverlay');
+    const dupConfirmOverlay  = document.getElementById('dupConfirmOverlay');
+    const screenFlash        = document.getElementById('screenFlash');
 
     document.getElementById('companyInput').addEventListener('blur', () => setTimeout(() => document.getElementById('companySuggestions').style.display = 'none', 150));
     document.getElementById('positionInput').addEventListener('blur', () => setTimeout(() => document.getElementById('positionSuggestions').style.display = 'none', 150));
-    
-    function refreshVacancies() {
-      jsonpGet({ action: 'vacancies' }, (data) => {
-        if (data.status === 'success') {
-          vacancyData = data.vacancies;
-          vacancyCompanies = [...new Set(vacancyData.map(v => v.company))].sort();
-        }
-      });
-    }
-    refreshVacancies();
-    
-    // ── Screen pulse flash ──
+
     function flashScreen(color) {
       screenFlash.style.background = color;
       screenFlash.classList.remove('flash');
-      void screenFlash.offsetWidth; // force reflow to restart animation
+      void screenFlash.offsetWidth;
       screenFlash.classList.add('flash');
     }
 
@@ -289,24 +271,46 @@ body {
       });
     }
 
-    function refreshList() {
-      jsonpGet({ action: 'list' }, (data) => {
-        if (data.status === 'success') { allCheckedIn = data.list; renderList(allCheckedIn); }
+    function refreshVacancies() {
+      jsonpGet({ action: 'vacancies' }, (data) => {
+        if (data.status === 'success') {
+          vacancyData = data.vacancies;
+          vacancyCompanies = [...new Set(vacancyData.map(v => v.company))].sort();
+        }
       });
     }
 
-    function renderList(items) {
-      if (!items.length) { registrantList.innerHTML = '<div class="listEmpty">No registrants found</div>'; return; }
-      registrantList.innerHTML = items.map(item =>
-        '<div class="registrantRow"><span class="registrantName">' + escapeHtml(item.name) +
-        '</span><span class="registrantTime">' + escapeHtml(item.time) + '</span></div>'
-      ).join('');
+    // ---- Registrant list: default shows checked-in only; searching reaches everyone ----
+    function refreshList() {
+      jsonpGet({ action: 'all' }, (data) => {
+        if (data.status === 'success') {
+          allRegistrants = data.registrants;
+          filterList(); // re-apply whatever is currently in the search box
+        }
+      });
     }
 
     function filterList() {
       const term = searchInput.value.trim().toLowerCase();
-      if (!term) { renderList(allCheckedIn); return; }
-      renderList(allCheckedIn.filter(item => item.name.toLowerCase().includes(term)));
+      if (!term) {
+        renderList(allRegistrants.filter(r => r.status === 'Checked In').reverse());
+      } else {
+        renderList(allRegistrants.filter(r => r.name.toLowerCase().includes(term)));
+      }
+    }
+
+    function renderList(items) {
+      if (!items.length) { registrantList.innerHTML = '<div class="listEmpty">No registrants found</div>'; return; }
+      registrantList.innerHTML = items.map(item => {
+        const safeName = escapeHtml(item.name);
+        const infoHtml = item.status === 'Checked In'
+          ? '<span class="registrantName">' + safeName + '</span><br><span class="registrantTime">✓ ' + escapeHtml(item.time) + '</span>'
+          : '<span class="registrantName">' + safeName + '</span><br><span class="registrantStatusPending">Not checked in</span>';
+        const actionHtml = item.status === 'Checked In'
+          ? '<button class="rowActionBtn hotsActionBtn" onclick="manualHots(\'' + item.id + '\', this)">⭐ HOTS</button>'
+          : '<button class="rowActionBtn checkInActionBtn" onclick="manualCheckIn(\'' + item.id + '\', this)">Check In</button>';
+        return '<div class="registrantRow"><div class="registrantInfo">' + infoHtml + '</div>' + actionHtml + '</div>';
+      }).join('');
     }
 
     function escapeHtml(str) {
@@ -315,8 +319,40 @@ body {
       return div.innerHTML;
     }
 
+    // ---- Manual fallback actions (search results, no camera involved) ----
+    function manualCheckIn(id, btnEl) {
+      if (btnEl.disabled) return;
+      btnEl.disabled = true;
+      jsonpGet({ action: 'checkin', id: id }, (res) => {
+        showManualResult(res);
+        refreshStats();
+        refreshList();
+      });
+    }
+
+    function manualHots(id, btnEl) {
+      if (btnEl.disabled) return;
+      btnEl.disabled = true;
+      jsonpGet({ action: 'hots_info', id: id }, (res) => {
+        btnEl.disabled = false;
+        if (res.status === 'ok') {
+          pendingHotsId = id;
+          openHotsForm(res.name, res.priorRecords);
+        } else {
+          showManualResult(res);
+        }
+      });
+    }
+
+    function showManualResult(res) {
+      resultDiv.style.display = 'block';
+      handleResult(res);
+      resumeAfterDelay();
+    }
+
     refreshStats();
     refreshList();
+    refreshVacancies();
 
     function startScanner(mode) {
       currentMode = mode;
@@ -411,11 +447,16 @@ body {
       }
     }
 
+    // In an active scan session, resets to "Point camera..."; in the menu (manual actions), just hides the banner
     function resumeAfterDelay() {
       setTimeout(() => {
         isProcessing = false;
-        resultDiv.className   = 'idle';
-        resultDiv.textContent = 'Point camera at QR code';
+        if (currentMode === null) {
+          resultDiv.style.display = 'none';
+        } else {
+          resultDiv.className   = 'idle';
+          resultDiv.textContent = 'Point camera at QR code';
+        }
       }, 2500);
     }
 
@@ -430,9 +471,11 @@ body {
       resumeAfterDelay();
     }
 
-function openHotsForm(name, priorRecords) {
+    function openHotsForm(name, priorRecords) {
       document.getElementById('companyInput').value = '';
       document.getElementById('positionInput').value = '';
+      document.getElementById('companySuggestions').style.display = 'none';
+      document.getElementById('positionSuggestions').style.display = 'none';
       document.getElementById('hotsFormName').textContent = name;
       pendingPriorCount = priorRecords ? priorRecords.length : 0;
 
@@ -447,11 +490,8 @@ function openHotsForm(name, priorRecords) {
       }
       hotsFormOverlay.style.display = 'flex';
     }
-    
-      document.getElementById('companySuggestions').style.display = 'none';
-      document.getElementById('positionSuggestions').style.display = 'none';
-    
-function onCompanyInput() {
+
+    function onCompanyInput() {
       const term = document.getElementById('companyInput').value.trim().toLowerCase();
       const box = document.getElementById('companySuggestions');
       if (!term) { box.style.display = 'none'; box.innerHTML = ''; return; }
@@ -502,18 +542,16 @@ function onCompanyInput() {
         if (el) onSelect(items[parseInt(el.dataset.index)].value);
       };
     }
-    
+
     function cancelHotsForm() {
       hotsFormOverlay.style.display = 'none';
-      resultDiv.style.display = 'block';
+      resultDiv.style.display = 'none';
       pendingHotsId = null;
       isProcessing = false;
-      resultDiv.className  = 'idle';
+      resultDiv.className   = 'idle';
       resultDiv.textContent = 'Point camera at QR code';
     }
 
-    // Step 1: validate the form. If this jobseeker already has prior HOTS records,
-    // route to a SEPARATE confirmation popup instead of submitting immediately.
     function confirmHotsForm() {
       if (hotsSubmitting) return;
       const company = document.getElementById('companyInput').value.trim();
@@ -536,7 +574,6 @@ function onCompanyInput() {
       submitHots(company, position);
     }
 
-    // Step 2 (only for repeats): staff explicitly says yes/no before it's actually recorded
     function confirmDupYes() {
       dupConfirmOverlay.style.display = 'none';
       submitHots(pendingCompany, pendingPosition);
@@ -544,10 +581,9 @@ function onCompanyInput() {
 
     function confirmDupNo() {
       dupConfirmOverlay.style.display = 'none';
-      hotsFormOverlay.style.display = 'flex'; // back to the form so staff can re-check/edit
+      hotsFormOverlay.style.display = 'flex';
     }
 
-    // Actual submission — guarded so a fast double-tap can never fire it twice
     function submitHots(company, position) {
       if (hotsSubmitting) return;
       hotsSubmitting = true;
@@ -560,15 +596,16 @@ function onCompanyInput() {
         resultDiv.style.display = 'block';
         handleResult(res);
         refreshStats();
+        refreshList();
         pendingHotsId = null;
         resumeAfterDelay();
       });
     }
-    
+
     function handleResult(res) {
       if (res.status === 'success') {
         if (navigator.vibrate) navigator.vibrate(200);
-        flashScreen('rgba(30, 126, 52, 0.5)');        // green pulse
+        flashScreen('rgba(30, 126, 52, 0.5)');
         resultDiv.className = 'success';
         if (res.company) {
           resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">HOTS recorded — ' + res.company + ' (' + res.position + ')</span><br><span style="font-size:12px;color:#ccc">' + res.time + '</span>';
@@ -577,22 +614,22 @@ function onCompanyInput() {
         }
       } else if (res.status === 'duplicate') {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
-        flashScreen('rgba(184, 134, 11, 0.5)');       // amber pulse
+        flashScreen('rgba(184, 134, 11, 0.5)');
         resultDiv.className = 'duplicate';
         resultDiv.innerHTML = '⚠️<br>' + res.name + '<br><span style="font-size:15px">Already recorded — ' + res.time + '</span>';
       } else if (res.status === 'not_checked_in') {
         if (navigator.vibrate) navigator.vibrate([150, 100, 150, 100, 150]);
-        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
+        flashScreen('rgba(167, 29, 42, 0.5)');
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '🚫<br>' + res.name + '<br><span style="font-size:15px">Not checked in yet — send to Check-In first</span>';
       } else if (res.status === 'error') {
         if (navigator.vibrate) navigator.vibrate(500);
-        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
+        flashScreen('rgba(167, 29, 42, 0.5)');
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '⚠️ System Error<br><span style="font-size:14px">' + res.message + '</span>';
       } else {
         if (navigator.vibrate) navigator.vibrate(500);
-        flashScreen('rgba(167, 29, 42, 0.5)');        // red pulse
+        flashScreen('rgba(167, 29, 42, 0.5)');
         resultDiv.className = 'invalid';
         resultDiv.innerHTML = '❌<br>Invalid Ticket';
       }
