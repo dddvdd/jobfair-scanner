@@ -639,9 +639,9 @@ body {
         flashScreen('rgba(30, 126, 52, 0.5)');
         resultDiv.className = 'success';
         if (res.interviewStatus) {
-          resultDiv.innerHTML = '✅<br>' + name + '<br><span style="font-size:15px">' + escapeHtml(res.interviewStatus) + ' — ' + company + ' (' + position + ')</span><br><span style="font-size:12px;color:#ccc">' + time + '</span>';
+          resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">' + res.interviewStatus + ' — ' + res.company + ' (' + res.position + ')</span><br><span style="font-size:12px;color:#ccc">' + res.time + '</span>';
         } else {
-          resultDiv.innerHTML = '✅<br>' + name + '<br><span style="font-size:15px">Checked In — ' + time + '</span>';
+          resultDiv.innerHTML = '✅<br>' + res.name + '<br><span style="font-size:15px">Checked In — ' + res.time + '</span>';
         }
       } else if (res.status === 'duplicate') {
         if (navigator.vibrate) navigator.vibrate([100, 100, 100]);
