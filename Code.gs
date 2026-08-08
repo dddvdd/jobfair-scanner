@@ -7,7 +7,7 @@ const EMAIL_COLUMN_HEADER = 'Email:';
 const LAST_NAME_HEADER    = 'Last Name:';
 const FIRST_NAME_HEADER   = 'First Name:';
 const MIDDLE_NAME_HEADER  = 'Middle Name:';
-const GENDER_HEADER       = 'Gender:';
+const GENDER_HEADER = 'Sex:';
 const BIRTHDATE_HEADER    = 'Birthdate:';
 const BARANGAY_HEADER     = 'Barangay:';
 const MUNICIPALITY_HEADER = 'Municipality/City:';
@@ -42,7 +42,7 @@ function getHeaderRow(sheet) {
 
 function colIndex(headers, name) {
   const idx = headers.indexOf(name);
-  if (idx === -1) throw new Error('Column not found: ' + name);
+  if (idx === -1) return 0;
   return idx + 1;
 }
 
